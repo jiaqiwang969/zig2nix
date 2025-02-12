@@ -73,8 +73,10 @@ in {
       chmod -R u+w .
     '';
     
-    # 添加运行时依赖
-    LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+    # 修复：使用 let-in 来确保 buildInputs 在使用前已定义
+    LD_LIBRARY_PATH = let
+      inputs = [ libxml2 zlib libclang lld llvm ];
+    in lib.makeLibraryPath inputs;
 
     # 添加内存限制
     NIX_ENFORCE_NO_NATIVE = "1";
