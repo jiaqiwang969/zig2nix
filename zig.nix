@@ -57,34 +57,19 @@ in {
 
       # ensure determinism in the compiler build
       "-DZIG_TARGET_MCPU=baseline"
-      
-      # 添加以下标志以修复自举问题
-      "-DZIG_USE_LLVM_CONFIG=ON"
-      "-DZIG_PIE=ON"
     ];
 
-    # 添加权限修复
     preBuild = ''
-      chmod u+w .
+      export TMPDIR="$NIX_BUILD_TOP/tmp"
+      mkdir -p "$TMPDIR"
+      chmod -R 777 "$TMPDIR"
     '';
 
-    # 确保构建目录可写
-    postUnpack = ''
-      chmod -R u+w .
-    '';
-    
-    # 修复：使用 let-in 来确保 buildInputs 在使用前已定义
-    LD_LIBRARY_PATH = let
-      inputs = [ libxml2 zlib libclang lld llvm ];
-    in lib.makeLibraryPath inputs;
-
-    # 添加内存限制
-    NIX_ENFORCE_NO_NATIVE = "1";
-    
-    # 增加构建时的内存限制
-    requiredSystemFeatures = [ "big-parallel" ];
-
-    env.ZIG_GLOBAL_CACHE_DIR = "$TMPDIR/zig-cache";
+    env = {
+      ZIG_GLOBAL_CACHE_DIR = "$TMPDIR/zig-cache";
+      ZIG_LOCAL_CACHE_DIR = "$TMPDIR/zig-cache";
+      TMPDIR = "$NIX_BUILD_TOP/tmp";
+    };
 
     # Zig's build looks at /usr/bin/env to find dynamic linking info. This doesn't
     # work in Nix's sandbox. Use env from our coreutils instead.
@@ -105,6 +90,7 @@ in {
 
     installCheckPhase = ''
       runHook preInstallCheck
+      export TMPDIR="$NIX_BUILD_TOP/tmp"
       $out/bin/zig test --cache-dir "$TMPDIR/zig-test-cache" -I ../test ../test/behavior.zig
       runHook postInstallCheck
       '';
