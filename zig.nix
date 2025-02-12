@@ -57,7 +57,18 @@ in {
 
       # ensure determinism in the compiler build
       "-DZIG_TARGET_MCPU=baseline"
+      
+      # 添加以下标志以增加稳定性
+      "-DCMAKE_BUILD_TYPE=Release"
+      "-DZIG_USE_CCACHE=OFF"
+      "-DZIG_STATIC=ON"
     ];
+
+    # 添加内存限制
+    NIX_ENFORCE_NO_NATIVE = "1";
+    
+    # 增加构建时的内存限制
+    requiredSystemFeatures = [ "big-parallel" ];
 
     env.ZIG_GLOBAL_CACHE_DIR = "$TMPDIR/zig-cache";
 
