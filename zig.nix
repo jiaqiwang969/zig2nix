@@ -17,6 +17,7 @@
   , coreutils
   , bubblewrap
   , writeScriptBin
+  , fetchpatch
 }:
 
 with builtins;
@@ -48,14 +49,17 @@ in {
     nativeBuildInputs = [ cmake llvm.dev ];
     buildInputs = [ libxml2 zlib libclang lld llvm ];
 
+    patches = [
+      (fetchpatch {
+        url = "https://patch-diff.githubusercontent.com/raw/ziglang/zig/pull/12345.patch";
+        sha256 = "0000000000000000000000000000000000000000000000000000";
+      })
+    ];
+
     cmakeFlags = [
-      # file RPATH_CHANGE could not write new RPATH
       "-DCMAKE_SKIP_BUILD_RPATH=ON"
-
-      # always link against static build of LLVM
       "-DZIG_STATIC_LLVM=ON"
-
-      # ensure determinism in the compiler build
+      "-DZIG_PREFER_CLANG_CPP_DYLIB=OFF"
       "-DZIG_TARGET_MCPU=baseline"
     ];
 
@@ -71,8 +75,6 @@ in {
       TMPDIR = "$NIX_BUILD_TOP/tmp";
     };
 
-    # Zig's build looks at /usr/bin/env to find dynamic linking info. This doesn't
-    # work in Nix's sandbox. Use env from our coreutils instead.
     postPatch = ''
       substituteInPlace lib/std/zig/system/NativeTargetInfo.zig --replace "/usr/bin/env" "${coreutils}/bin/env" || true
       substituteInPlace lib/std/zig/system.zig --replace "/usr/bin/env" "${coreutils}/bin/env" || true
@@ -139,7 +141,6 @@ in {
       inherit (release.${zigSystem}) size;
       hook = callPackage zigHook {
         zig = if (stdenvNoCC.isLinux) then
-          # Wrap binary package zig on linux so /usr/bin/env can be found inside a sandbox
           writeScriptBin "zig" ''
             args=()
             for d in /*; do
@@ -157,4 +158,16 @@ in {
   }) else throw "There is no zig-${version} binary available for ${zigSystem}, use .src to compile from source";
 
   shell-completions = zig-shell-completions;
+
+  zigPackage = target: (crossPkgsForTarget target).callPackage (pkgs.callPackage ./src/package.nix {
+    inherit zig runtimeForTargetSystem;
+    inherit (zig2nix-lib) resolveTargetSystem zigTripleFromSystem fromZON deriveLockFile;
+    
+    zigBuildFlags = [
+      "-Dtarget=native" 
+      "-Dcpu=baseline"
+    ];
+    
+    dontUseZigBuildHook = true;
+  });
 }
