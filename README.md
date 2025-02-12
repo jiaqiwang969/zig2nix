@@ -99,6 +99,40 @@ nix run github:Cloudef/zig2nix#zon2nix -- build.zig.zon
 nix run github:Cloudef/zig2nix#zon2nix -- build.zig.zon2json-lock
 ```
 
+### Update versions.json
+
+```bash
+# Update versions.json with latest datetime information
+nix run .#update-versions.datetime > versions.json
+
+# Or update with default version information
+nix run .#update-versions.default > versions.json
+```
+
+### Using zig2nix in your project
+
+You can use zig2nix to manage Zig versions in your project. For example:
+
+```nix
+# In your flake.nix, change your zig input from:
+zig.url = "github:roarkanize/zig-overlay";
+# to:
+zig.url = "github:jiaqiwang969/zig2nix";
+
+# Then in your nix/overlay.nix, change:
+zig = final.zigpkgs.master.latest;
+# to:
+zig = final.zigpkgs.zig.git.src;
+```
+
+# Then update nix flake
+
+```bash
+nix flake update
+```
+
+This will use the Zig version specified in zig2nix's versions.json file.
+
 ### Cross-compile nixpkgs using zig
 
 > This is very experimental, and many things may not compile.

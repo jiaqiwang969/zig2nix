@@ -1,0 +1,46 @@
+{
+  "2022-03-30": {
+    "commit": "e39c86399da565d3855d54b242bf7b5940e3924d",
+    "description": "link: half-hearted bug fix for decl_state field"
+  },
+  "2022-03-20": {
+    "commit": "633fe41a2c2310d8cfab53ee9d87bb50ac4efc41",
+    "description": "Sema: allow comptime blocks for global assembly"
+  },
+  "2022-03-19": {
+    "commit": "5d5282b5f18b33489187a9a9e23a1aa2d301b4e8",
+    "description": "AstGen: support local var references for outputs"
+  },
+  "2022-03-29": {
+    "commit": "4dd65316b7d5756809394710078718b3ee536a9b",
+    "description": "AstGen: coerce break operands of labeled blocks"
+  },
+  "2022-03-28": {
+    "commit": "b8cd56dc94f68cda6616b4d9411d0419d2bb909f",
+    "description": "Merge pull request #11300 from ziglang/stage2-debug-error-sets"
+  },
+  "2022-03-27": {
+    "commit": "23507f20b943e7923978b293cb03bee886f913ed",
+    "description": "Merge pull request #11315 from wsengir/stage2-simplify-muladd"
+  },
+  "2022-03-26": {
+    "commit": "600c7fe1dacc1d6fd35275c7abe459b5b56bfa63",
+    "description": "Merge pull request #11299 from Vexu/stage2-build"
+  },
+  "2022-03-25": {
+    "commit": "a4c5ec49f1781054ef9394fe114e4338ed9970d4",
+    "description": "Sema: add error for empty switch"
+  },
+  "2022-03-18": {
+    "commit": "df544cace97b57b318dba439d4e67a3953388477",
+    "description": "std: explicitly handle error.UnexpectedExitCode in build_runner"
+  },
+  "2022-03-23": {
+    "commit": "109e730c8ccdfe144f568f232578ab600ef4f33c",
+    "description": "stage1: Fix packed structs (#2627, #10104)"
+  },
+  "2022-02-12": {
+    "commit": "a7b3082ba0d07c66d2ec19304ffe993d77f714b7",
+    "description": "Implement `type.bitSize` for unions"
+  }
+}
