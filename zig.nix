@@ -58,11 +58,23 @@ in {
       # ensure determinism in the compiler build
       "-DZIG_TARGET_MCPU=baseline"
       
-      # 添加以下标志以增加稳定性
-      "-DCMAKE_BUILD_TYPE=Release"
-      "-DZIG_USE_CCACHE=OFF"
-      "-DZIG_STATIC=ON"
+      # 添加以下标志以修复自举问题
+      "-DZIG_USE_LLVM_CONFIG=ON"
+      "-DZIG_PIE=ON"
     ];
+
+    # 添加权限修复
+    preBuild = ''
+      chmod u+w .
+    '';
+
+    # 确保构建目录可写
+    postUnpack = ''
+      chmod -R u+w .
+    '';
+    
+    # 添加运行时依赖
+    LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
 
     # 添加内存限制
     NIX_ENFORCE_NO_NATIVE = "1";
